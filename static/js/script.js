@@ -100,7 +100,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 .map(([key, value]) => {
                     switch(key) {
                         case 'paraphrase': return 'Paraphrased';
-                        case 'remove_ai_phrases': return 'AI phrases removed';
+                        case 'remove_ai_phrases': return 'AI phrases replaced';
                         case 'humanize': return 'Humanized';
                         default: return key;
                     }
