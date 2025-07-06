@@ -5,7 +5,7 @@ A Python web application that transforms text through paraphrasing, AI phrase re
 ## Features
 
 - **Paraphrasing**: Rephrases text while preserving original meaning using synonym replacement and sentence restructuring
-- **AI Phrase Removal**: Identifies and removes common robotic phrases used by AI tools
+- **Advanced AI Phrase Replacement**: Intelligently replaces robotic AI phrases with natural alternatives while preserving meaning
 - **Humanization**: Converts formal language to conversational tone with contractions and casual replacements
 - **Context Preservation**: Maintains the original intent and meaning of the text
 - **Interactive UI**: Clean, responsive interface with real-time character counting
@@ -106,10 +106,11 @@ curl -X POST http://localhost:5000/process \
 
 ## Text Processing Algorithms
 
-### AI Phrase Removal
-- Removes common AI-generated phrases like "as an AI language model"
-- Eliminates formal transition words that sound robotic
-- Cleans up redundant punctuation and spacing
+### Advanced AI Phrase Replacement
+- Intelligently replaces common AI-generated phrases like "as an AI language model" with natural alternatives
+- Preserves sentence meaning and structure instead of just removing phrases
+- Uses contextual replacements to maintain readability and flow
+- Handles formal transition words and converts them to casual alternatives
 
 ### Humanization
 - Replaces formal vocabulary with casual alternatives

@@ -4,37 +4,134 @@ import string
 
 app = Flask(__name__)
 
-# Common AI phrases to remove/replace
-AI_PHRASES = [
-    r'\b(?:as an ai|i\'m an ai|as a language model|i\'m a language model)\b',
-    r'\b(?:i don\'t have personal|i don\'t have the ability|i cannot provide personal)\b',
-    r'\b(?:however|furthermore|moreover|additionally)\b',
-    r'\b(?:it\'s important to note|it\'s worth noting|it should be noted)\b',
-    r'\b(?:in conclusion|to summarize|in summary)\b',
-    r'\b(?:feel free to|please don\'t hesitate to)\b',
-    r'\b(?:i hope this helps|i hope this information is helpful)\b',
-    r'\b(?:certainly|absolutely|definitely)\b',
-    r'\b(?:please note that|it\'s essential to understand)\b',
-    r'\b(?:as mentioned earlier|as previously discussed)\b'
-]
+# Advanced AI phrase replacements - contextual alternatives instead of removal
+AI_PHRASE_REPLACEMENTS = {
+    # AI identity phrases - these should often be completely removed or replaced with natural flow
+    r'\b(?:as an ai|i\'m an ai|as a language model|i\'m a language model)\b': ['', '', ''],  # Mostly remove
+    
+    # Limitation phrases - replace with more natural alternatives
+    r'\b(?:i don\'t have personal|i don\'t have the ability|i cannot provide personal)\b': ['research shows', 'studies indicate', 'evidence suggests'],
+    
+    # Formal transition words - replace with more natural connectors
+    r'\bhowever\b': ['but', 'yet', 'though', 'still'],
+    r'\bfurthermore\b': ['also', 'plus', 'what\'s more', 'additionally'],
+    r'\bmoreover\b': ['also', 'besides', 'on top of that'],
+    r'\badditionally\b': ['also', 'plus', 'and'],
+    
+    # Emphasis phrases - replace with more natural alternatives
+    r'\b(?:it\'s important to note|it\'s worth noting|it should be noted)\b': ['importantly', 'note that', 'keep in mind', 'remember'],
+    
+    # Conclusion phrases - replace with natural endings
+    r'\b(?:in conclusion|to summarize|in summary)\b': ['overall', 'in the end', 'to wrap up', 'finally'],
+    
+    # Invitation phrases - replace with warmer alternatives
+    r'\b(?:feel free to|please don\'t hesitate to)\b': ['you can', 'go ahead and', 'simply', 'just'],
+    
+    # Help phrases - replace with more casual alternatives
+    r'\b(?:i hope this helps|i hope this information is helpful)\b': ['hope this works', 'this should help', 'that covers it'],
+    
+    # Certainty phrases - replace with more natural confidence
+    r'\b(?:certainly|absolutely|definitely)\b': ['yes', 'sure', 'of course', 'clearly'],
+    
+    # Formal note phrases - replace with casual alternatives
+    r'\b(?:please note that|it\'s essential to understand)\b': ['remember that', 'keep in mind', 'just know that'],
+    
+    # Reference phrases - replace with natural references
+    r'\b(?:as mentioned earlier|as previously discussed)\b': ['as we saw', 'like before', 'as noted', 'earlier']
+}
 
 def remove_ai_phrases(text):
-    """Remove or replace common AI phrases to make text more natural."""
+    """Advanced AI phrase replacement - replace robotic phrases with natural alternatives while preserving meaning."""
+    import random
+    
     processed_text = text
     
-    # Remove common AI phrases
-    for pattern in AI_PHRASES:
-        processed_text = re.sub(pattern, '', processed_text, flags=re.IGNORECASE)
+    # Advanced replacement of AI phrases with contextual alternatives
+    for pattern, replacements in AI_PHRASE_REPLACEMENTS.items():
+        if re.search(pattern, processed_text, flags=re.IGNORECASE):
+            # Choose a random replacement from the alternatives (empty string means remove)
+            replacement = random.choice(replacements)
+            processed_text = re.sub(pattern, replacement, processed_text, flags=re.IGNORECASE)
     
-    # Clean up extra spaces and punctuation
+    # Handle sentence structure improvements after replacements
+    processed_text = _fix_sentence_structure(processed_text)
+    
+    # Clean up extra spaces and punctuation issues
     processed_text = re.sub(r'\s+', ' ', processed_text)
     processed_text = re.sub(r'\s*,\s*,', ',', processed_text)
     processed_text = re.sub(r'\s*\.\s*\.', '.', processed_text)
     processed_text = re.sub(r'^\s*,\s*', '', processed_text)  # Remove leading comma
     processed_text = re.sub(r'\s*,\s*$', '', processed_text)  # Remove trailing comma
+    processed_text = re.sub(r'\s*,\s*\.', '.', processed_text)  # Fix ", ." -> "."
+    
+    # Fix duplicate words that can occur after phrase replacement
+    processed_text = re.sub(r'\b(\w+)\s+\1\b', r'\1', processed_text)  # "that that" -> "that"
+    
     processed_text = processed_text.strip()
     
+    # Ensure sentences start with capital letters
+    sentences = re.split(r'(?<=[.!?])\s+', processed_text)
+    capitalized_sentences = []
+    for sentence in sentences:
+        sentence = sentence.strip()
+        if sentence:
+            # Capitalize first letter of each sentence
+            sentence = sentence[0].upper() + sentence[1:] if len(sentence) > 1 else sentence.upper()
+            capitalized_sentences.append(sentence)
+    
+    processed_text = ' '.join(capitalized_sentences)
+    
     return processed_text
+
+def _fix_sentence_structure(text):
+    """Fix common sentence structure issues after AI phrase replacement."""
+    # Fix sentences that start with commas after phrase removal
+    text = re.sub(r'^\s*,\s*([a-z])', r'\1', text, flags=re.IGNORECASE)
+    
+    # Fix double commas and spacing issues
+    text = re.sub(r',\s*,', ',', text)
+    
+    # Fix cases where commas appear before periods
+    text = re.sub(r',\s*\.', '.', text)
+    
+    # Fix awkward sentence fragments - remove isolated AI identity phrases
+    patterns_to_clean = [
+        r',\s*language model,',  # ", language model,"
+        r'language model,\s*([A-Z])',  # "language model, I" -> "I"
+        r'\b(?:based on research|from what we know|studies indicate|evidence suggests),?\s*([a-z])',  # Fix standalone research phrases
+    ]
+    
+    for pattern in patterns_to_clean:
+        if 'language model' in pattern:
+            text = re.sub(pattern, '', text)
+        else:
+            text = re.sub(pattern, r'\1', text, flags=re.IGNORECASE)
+    
+    # Fix sentences that begin with lonely conjunctions
+    text = re.sub(r'^\s*(?:but|yet|though|also|plus|and),?\s*([a-z])', r'\1', text, flags=re.IGNORECASE)
+    
+    # Fix double spaces
+    text = re.sub(r'\s+', ' ', text)
+    
+    # Split into sentences and fix each one
+    sentences = re.split(r'(?<=[.!?])\s+', text)
+    fixed_sentences = []
+    
+    for sentence in sentences:
+        sentence = sentence.strip()
+        if sentence:
+            # Remove leading commas
+            sentence = re.sub(r'^\s*,\s*', '', sentence)
+            
+            # Capitalize first letter if it's lowercase
+            if sentence and sentence[0].islower():
+                sentence = sentence[0].upper() + sentence[1:]
+            
+            # Skip very short meaningless fragments
+            if len(sentence.strip()) > 2:
+                fixed_sentences.append(sentence)
+    
+    return ' '.join(fixed_sentences)
 
 def humanize_text(text):
     """Make text more conversational and human-like."""
