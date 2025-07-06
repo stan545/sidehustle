@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Processor - Paraphrasing & Humanization Tool</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖➡️👤 Text Processor</h1>
+            <p>Transform your text with paraphrasing, AI phrase removal, and humanization</p>
+        </header>
+
+        <main>
+            <div class="processing-options">
+                <h3>Processing Options</h3>
+                <div class="options-grid">
+                    <label class="option-item">
+                        <input type="checkbox" id="paraphrase" checked>
+                        <span class="checkmark"></span>
+                        <div class="option-info">
+                            <strong>Paraphrasing</strong>
+                            <small>Rephrase text while preserving meaning</small>
+                        </div>
+                    </label>
+                    
+                    <label class="option-item">
+                        <input type="checkbox" id="remove_ai_phrases" checked>
+                        <span class="checkmark"></span>
+                        <div class="option-info">
+                            <strong>AI Phrase Removal</strong>
+                            <small>Remove robotic AI-generated phrases</small>
+                        </div>
+                    </label>
+                    
+                    <label class="option-item">
+                        <input type="checkbox" id="humanize" checked>
+                        <span class="checkmark"></span>
+                        <div class="option-info">
+                            <strong>Humanization</strong>
+                            <small>Make text more conversational and natural</small>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
+            <div class="text-areas">
+                <div class="input-section">
+                    <h3>Input Text</h3>
+                    <textarea 
+                        id="input-text" 
+                        placeholder="Paste or type your text here to transform it..."
+                        rows="10"
+                    ></textarea>
+                    <div class="text-info">
+                        <span id="input-char-count">0 characters</span>
+                    </div>
+                </div>
+
+                <div class="controls">
+                    <button id="process-btn" class="btn btn-primary">
+                        <span class="btn-text">Process Text</span>
+                        <span class="loading-spinner" style="display: none;">⟳</span>
+                    </button>
+                    <button id="clear-btn" class="btn btn-secondary">Clear All</button>
+                    <button id="copy-btn" class="btn btn-secondary" style="display: none;">Copy Result</button>
+                </div>
+
+                <div class="output-section" style="display: none;">
+                    <h3>Processed Text</h3>
+                    <div id="output-text" class="output-content"></div>
+                    <div class="text-info">
+                        <span id="output-char-count">0 characters</span>
+                        <span id="processing-info"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="error-message" class="error-message" style="display: none;"></div>
+        </main>
+
+        <footer>
+            <p>Built with Flask, Transformers, and ❤️ for better text processing</p>
+        </footer>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
